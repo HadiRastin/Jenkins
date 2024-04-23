@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        
+        DIRECTORY_PATH = 'C:\Users\Hadi\Desktop\Computer Science\2024\Professional Practice\OnTrck\Working\5.1P'
         TESTING_ENVIRONMENT = 'testing_environment'
         PRODUCTION_ENVIRONMENT = 'Hadi Rastin' 
     }
