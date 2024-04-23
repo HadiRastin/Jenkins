@@ -1,60 +1,93 @@
 pipeline {
     agent any
     
-    environment {
-        DIRECTORY_PATH = 'C:/Users/Hadi/Desktop/Computer Science/2024/Professional Practice/OnTrck/Working/5.1P'
-
-        TESTING_ENVIRONMENT = 'testing_environment'
-        PRODUCTION_ENVIRONMENT = 'Hadi Rastin' 
-    }
-    
     stages {
         stage('Build') {
             steps {
-                echo "Fetching the source code from the directory path specified by the environment variable: ${DIRECTORY_PATH}"
-                echo "Compiling the code and generating any necessary artifacts"
+                echo 'Building the code using Maven'
             }
         }
         
-        stage('Test') {
+        stage('Unit and Integration Tests') {
             steps {
-                echo "Running unit tests"
-                echo "Running integration tests"
+                echo 'Running unit tests using JUnit'
+                
+                echo 'Running integration tests using Selenium'
+            }
+            post {
+                success {
+                    emailext attachLog: true, 
+                    body: 'Unit and Integration Tests passed successfully', 
+                    subject: 'Tests Success', 
+                    to: 'hadirastin88@gmail.com'
+                }
+                failure {
+                    emailext attachLog: true, 
+                    body: 'Unit and Integration Tests failed', 
+                    subject: 'Tests Failure', 
+                    to: 'hadirastin88@gmail.com'
+                }
             }
         }
         
-        stage('Code Quality Check') {
+        stage('Code Analysis') {
             steps {
-                echo "Checking the quality of the code"
+                echo 'Analyzing code using SonarQube'
             }
         }
         
-        stage('Deploy') {
+        stage('Security Scan') {
             steps {
-                echo "Deploying the application to a testing environment specified by the environment variable: ${TESTING_ENVIRONMENT}"
+                echo 'Performing security scan using OWASP ZAP'
+            }
+            post {
+                success {
+                    emailext attachLog: true, 
+                    body: 'Security Scan passed successfully', 
+                    subject: 'Security Scan Success', 
+                    to: 'hadirastin88@gmail.com'
+                }
+                failure {
+                    emailext attachLog: true, 
+                    body: 'Security Scan failed', 
+                    subject: 'Security Scan Failure', 
+                    to: 'hadirastin88@gmail.com'
+                }
             }
         }
         
-        stage('Approval') {
+        stage('Deploy to Staging') {
             steps {
-                echo "Waiting for manual approval..."
-                sleep(time: 10, unit: 'SECONDS') 
+                echo 'Deploying application to staging server (AWS EC2 instance)'
+            }
+        }
+        
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running integration tests on staging environment'
             }
         }
         
         stage('Deploy to Production') {
             steps {
-                echo "Deploying the code to the production environment: ${PRODUCTION_ENVIRONMENT}"
+                echo 'Deploying application to production server (AWS EC2 instance)'
             }
         }
     }
     
     post {
         success {
-            echo 'Pipeline succeeded!'
+            emailext attachLog: true, 
+            body: 'Pipeline succeeded', 
+            subject: 'Pipeline Success', 
+            to: 'hadirastin88@gmail.com'
         }
         failure {
-            echo 'Pipeline failed!'
+            // Send notification email with failure status and logs as attachment
+            emailext attachLog: true, 
+            body: 'Pipeline failed', 
+            subject: 'Pipeline Failure', 
+            to: 'hadirastin88@gmail.com'
         }
     }
 }
